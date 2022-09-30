@@ -15,7 +15,7 @@ function auth(req, res, next) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // This try-catch handles the verification of the token gien to the user
+  // This try-catch handles the verification of the token given to the user
   try {
     const [, token] = header.split(" ");
 

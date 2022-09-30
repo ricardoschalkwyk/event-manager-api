@@ -1,8 +1,22 @@
 const Event = require("./entities/event.entity");
+const userService = require("../user/user.service");
 
-// This finds all the event's inside the database
+// This finds all the event's inside the database that belong to a user
 async function findAll(data) {
   const eventData = Event.find(data);
+
+  return eventData;
+}
+
+// This finds all the event's inside the database
+async function findAllUserEvents(data) {
+  const eventData = await Event.find(data).populate("user");
+
+  return eventData;
+}
+
+async function findByUserId(userId) {
+  const eventData = Event.find({ user: userId });
 
   return eventData;
 }
@@ -34,6 +48,8 @@ async function remove(id) {
 }
 
 module.exports = {
+  findAllUserEvents,
+  findByUserId,
   findAll,
   findOne,
   update,

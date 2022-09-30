@@ -9,7 +9,7 @@ const router = express.Router();
 // POST request
 router.get("/", auth, async (req, res, next) => {
   try {
-    // By using the userId I can findAll of the users
+    // By using the user-id I can findAll of the users
     const data = await userService.findAll();
 
     res.json(data);
@@ -20,7 +20,7 @@ router.get("/", auth, async (req, res, next) => {
 
 router.get("/:id", auth, async (req, res, next) => {
   try {
-    // By using the userId i can findAll of the users
+    // By using the user-id i can findAll of the users
     const data = await userService.findOne(req.params.id);
 
     if (!data) {

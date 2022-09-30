@@ -11,8 +11,20 @@ router.get("/", auth, async (req, res, next) => {
     // Inside this try I'm trying to find a certain users events
     const { sub } = req.user;
 
-    // By using the userId i can findAll of the users events
-    const data = await eventService.findAll({ userId: sub });
+    // By using the user-id I can findAll of the users events
+    const data = await eventService.findAll({ user: sub });
+
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get Every user created event
+router.get("/all", auth, async (req, res, next) => {
+  try {
+    // Find every existing event
+    const data = await eventService.findAllUserEvents();
 
     res.json(data);
   } catch (error) {
@@ -25,8 +37,20 @@ router.get("/:id", auth, async (req, res, next) => {
     // Inside this try I'm trying to find a certain users events
     // const { sub } = req.user;
 
-    // By using the userId i can findAll of the users events
+    // By using the user-id I can findAll of the users events
     const data = await eventService.findOne(req.params.id);
+
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// User Id
+router.get("/findByUserId/:id", auth, async (req, res, next) => {
+  try {
+    // By using the user-id I can findAll of the users events
+    const data = await eventService.findByUserId(req.params.id);
 
     res.json(data);
   } catch (error) {
@@ -42,14 +66,14 @@ router.put("/:id", async (req, res) => {
 
 // POST request
 router.post("/", auth, async (req, res) => {
-  // Again sub is used for the userId
+  // Again sub is used for the user-id
   const { sub } = req.user;
 
   // Data is created from an input field on the front-end
-  // Then userId is added to that created data
+  // Then user-id is added to that created data
   const data = await eventService.create({
     ...req.body,
-    userId: sub,
+    user: sub,
   });
 
   if (data.length === 0) {
