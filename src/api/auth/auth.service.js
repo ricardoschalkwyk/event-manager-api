@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-
+const { OAuth2Client } = require("google-auth-library");
 const User = require("../user/entities/user.entity");
 
 // Here to data is verified again
@@ -19,6 +19,23 @@ async function verify(data) {
   }
 
   return { user, verified: false };
+}
+
+async function googleVerify() {
+  try {
+    const client = new OAuth2Client(process.env.CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: process.env.JWT_TOKEN,
+      // Specify the CLIENT_ID of the app that accesses the backend
+      audience: process.env.CLIENT_ID,
+      // Or, if multiple clients access the backend:
+    });
+
+    const payload = ticket.getPayload();
+    const userid = payload[{ id: "sub" }];
+  } catch (error) {
+    verify().catch(error);
+  }
 }
 
 module.exports = {

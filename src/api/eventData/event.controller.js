@@ -58,6 +58,22 @@ router.get("/findByUserId/:id", auth, async (req, res, next) => {
   }
 });
 
+router.get("/:id/join", auth, async (req, res) => {
+  const { sub } = req.user;
+
+  const data = await eventService.join(req.params.id, sub);
+
+  res.json(data);
+});
+
+router.get("/:id/leave", auth, async (req, res) => {
+  const { sub } = req.user;
+
+  const data = await eventService.leave(req.params.id, sub);
+
+  res.json(data);
+});
+
 router.put("/:id", async (req, res) => {
   const data = await eventService.update(req.params.id, req.body);
 

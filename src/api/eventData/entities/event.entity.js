@@ -14,6 +14,7 @@ const eventSchema = new mongoose.Schema({
   // This user is added to every event so that it can be traced to
   // the user that made it
   user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
 });
 
 module.exports = mongoose.model("event", eventSchema);

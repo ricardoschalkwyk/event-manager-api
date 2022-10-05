@@ -1,5 +1,4 @@
 const Event = require("./entities/event.entity");
-const userService = require("../user/user.service");
 
 // This finds all the event's inside the database that belong to a user
 async function findAll(data) {
@@ -22,7 +21,7 @@ async function findByUserId(userId) {
 }
 
 async function findOne(id) {
-  const eventData = Event.findById(id);
+  const eventData = Event.findById(id).populate("members");
 
   return eventData;
 }
@@ -36,6 +35,24 @@ async function create(data) {
 
 async function update(id, data) {
   return Event.findByIdAndUpdate(id, data);
+}
+
+async function join(id, userId) {
+  const event = await Event.findById(id);
+
+  event.members.push(userId);
+
+  return event.save();
+}
+
+async function leave(id, userId) {
+  const event = await Event.findById(id);
+
+  const filtered = event.members.filter((_id) => _id === userId);
+
+  event.members = filtered;
+
+  return event.save();
 }
 
 // This finds only one event determined by the id for deleting it from the database
@@ -54,5 +71,7 @@ module.exports = {
   findOne,
   update,
   create,
+  join,
+  leave,
   remove,
 };

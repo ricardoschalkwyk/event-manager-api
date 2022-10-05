@@ -8,11 +8,24 @@ async function create(data) {
     return null;
   }
 
-  // Here I am using becrypt to encrypt the password that was entered when signing up on the app
+  // Here I am using bcrypt to encrypt the password that was entered when signing up on the app
   const salt = await bcrypt.genSalt(10);
 
-  // Here becrypt is being add to the password
+  // Here bcrypt is being add to the password
   data.password = await bcrypt.hash(data.password, salt);
+
+  const newUser = new User(data);
+
+  // Once the password is encrypted the user is saved
+  return newUser.save();
+}
+
+async function googleCreate(data) {
+  const [user] = await User.find({ email: data.email });
+
+  if (user) {
+    return null;
+  }
 
   const newUser = new User(data);
 
@@ -61,6 +74,7 @@ async function remove(id) {
 
 module.exports = {
   create,
+  googleCreate,
   findAll,
   findOne,
   update,
