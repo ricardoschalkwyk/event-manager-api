@@ -59,20 +59,13 @@ router.post("/sign-up", async (req, res) => {
 });
 
 // POST request
-router.post("/google-sign-in", async (req, res, next) => {
+router.get("/google-sign-in", async (req, res, next) => {
   try {
-    // Here to data is taken to create a new user
-    const data = await userService.create(req.body);
+    const { code } = req.query;
 
-    if (!data) {
-      res.status(422).json({ message: "Unable to add user, try again later" });
-    } else {
-      res.json({
-        message: "User has been created.",
-        email: data.email,
-        _id: data._id,
-      });
-    }
+    const { id_token, access_token } = await authService.googleOAuthToken(code);
+
+    res.json({ code, id_token, access_token });
   } catch (error) {
     next(error);
   }

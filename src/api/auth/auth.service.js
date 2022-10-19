@@ -32,12 +32,49 @@ async function googleVerify() {
     });
 
     const payload = ticket.getPayload();
-    const userid = payload[{ id: "sub" }];
+
+    return { payload };
   } catch (error) {
     verify().catch(error);
   }
 }
 
+async function googleOAuthToken(code) {
+  try {
+    const url = "https://oauth2.googleapis.com/token";
+
+    const values = {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      grant_type: "authorization_code",
+    };
+
+    const params = new URLSearchParams(values);
+
+    console.log(params);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `${params}`,
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
 module.exports = {
   verify,
+  googleVerify,
+  googleOAuthToken,
 };
