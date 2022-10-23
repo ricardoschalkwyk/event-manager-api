@@ -27,9 +27,6 @@ async function googleCreate(data) {
     { upsert: true }
   );
 
-  console.log(user);
-
-  // Once the password is encrypted the user is saved
   return user;
 }
 
@@ -37,12 +34,9 @@ async function facebookCreate(data) {
   const user = await User.findOneAndUpdate(
     { email: data.email },
     { $set: data },
-    { upsert: true }
+    { upsert: true, new: true }
   );
 
-  console.log(user);
-
-  // Once the password is encrypted the user is saved
   return user;
 }
 

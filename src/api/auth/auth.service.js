@@ -77,8 +77,6 @@ async function facebookOAuthToken(code) {
 
   const data = await res.json();
 
-  console.log(data);
-
   return data;
 }
 
@@ -96,8 +94,6 @@ async function facebookVerifyToken(access_token) {
 
   const { data } = await res.json();
 
-  console.log(data);
-
   return data;
 }
 
@@ -107,8 +103,6 @@ async function getFacebookUser({ user_id, access_token }) {
   const res = await fetch(url);
 
   const data = await res.json();
-
-  console.log(data);
 
   return data;
 }

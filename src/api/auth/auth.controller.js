@@ -100,7 +100,7 @@ router.get("/facebook-sign-in", async (req, res, next) => {
     const { access_token } = await authService.facebookOAuthToken(code);
     const { user_id } = await authService.facebookVerifyToken(access_token);
 
-    await authService.getFacebookUser({
+    const user = await authService.getFacebookUser({
       user_id,
       access_token,
     });
@@ -109,25 +109,22 @@ router.get("/facebook-sign-in", async (req, res, next) => {
       res.status(400).send();
     }
 
-    // // Gets user details from token
-    // const user = jwt.decode(access_token);
+    const newUser = await userService.facebookCreate({
+      firstName: user.name.split(" ")[0],
+      lastName: user.name.split(" ")[1],
+      email: `${user.id}@facebook.com`,
+    });
 
-    // const newUser = await userService.facebookCreate({
-    //   firstName: user.given_name,
-    //   lastName: user.family_name,
-    //   email: user.email,
-    // });
+    const payload = {
+      email: newUser.email,
+      sub: newUser._id,
+    };
 
-    // const payload = {
-    //   email: newUser.email,
-    //   sub: newUser._id,
-    // };
+    const token = jwt.sign(JSON.stringify(payload), process.env.JWT_TOKEN, {
+      algorithm: "HS256",
+    });
 
-    // const token = jwt.sign(JSON.stringify(payload), process.env.JWT_TOKEN, {
-    //   algorithm: "HS256",
-    // });
-
-    // res.json({ token, user: newUser });
+    res.json({ token, user: newUser });
   } catch (error) {
     next(error);
   }
