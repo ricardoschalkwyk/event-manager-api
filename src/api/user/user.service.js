@@ -21,16 +21,29 @@ async function create(data) {
 }
 
 async function googleCreate(data) {
-  const [user] = await User.find({ email: data.email });
+  const user = await User.findOneAndUpdate(
+    { email: data.email },
+    { $set: data },
+    { upsert: true }
+  );
 
-  if (user) {
-    return null;
-  }
-
-  const newUser = new User(data);
+  console.log(user);
 
   // Once the password is encrypted the user is saved
-  return newUser.save();
+  return user;
+}
+
+async function facebookCreate(data) {
+  const user = await User.findOneAndUpdate(
+    { email: data.email },
+    { $set: data },
+    { upsert: true }
+  );
+
+  console.log(user);
+
+  // Once the password is encrypted the user is saved
+  return user;
 }
 
 async function findAll() {
@@ -75,6 +88,7 @@ async function remove(id) {
 module.exports = {
   create,
   googleCreate,
+  facebookCreate,
   findAll,
   findOne,
   update,

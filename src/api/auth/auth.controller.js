@@ -63,9 +63,71 @@ router.get("/google-sign-in", async (req, res, next) => {
   try {
     const { code } = req.query;
 
-    const { id_token, access_token } = await authService.googleOAuthToken(code);
+    const { id_token } = await authService.googleOAuthToken(code);
 
-    res.json({ code, id_token, access_token });
+    if (!id_token) {
+      res.status(400).send();
+    }
+
+    // Gets user details from token
+    const user = jwt.decode(id_token);
+
+    const newUser = await userService.googleCreate({
+      firstName: user.given_name,
+      lastName: user.family_name,
+      email: user.email,
+    });
+
+    const payload = {
+      email: newUser.email,
+      sub: newUser._id,
+    };
+
+    const token = jwt.sign(JSON.stringify(payload), process.env.JWT_TOKEN, {
+      algorithm: "HS256",
+    });
+
+    res.json({ token, user: newUser });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/facebook-sign-in", async (req, res, next) => {
+  try {
+    const { code } = req.query;
+
+    const { access_token } = await authService.facebookOAuthToken(code);
+    const { user_id } = await authService.facebookVerifyToken(access_token);
+
+    await authService.getFacebookUser({
+      user_id,
+      access_token,
+    });
+
+    if (!access_token) {
+      res.status(400).send();
+    }
+
+    // // Gets user details from token
+    // const user = jwt.decode(access_token);
+
+    // const newUser = await userService.facebookCreate({
+    //   firstName: user.given_name,
+    //   lastName: user.family_name,
+    //   email: user.email,
+    // });
+
+    // const payload = {
+    //   email: newUser.email,
+    //   sub: newUser._id,
+    // };
+
+    // const token = jwt.sign(JSON.stringify(payload), process.env.JWT_TOKEN, {
+    //   algorithm: "HS256",
+    // });
+
+    // res.json({ token, user: newUser });
   } catch (error) {
     next(error);
   }

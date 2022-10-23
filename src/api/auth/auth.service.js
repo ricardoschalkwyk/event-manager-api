@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { OAuth2Client } = require("google-auth-library");
 const User = require("../user/entities/user.entity");
 
 // Here to data is verified again
@@ -21,60 +20,104 @@ async function verify(data) {
   return { user, verified: false };
 }
 
-async function googleVerify() {
-  try {
-    const client = new OAuth2Client(process.env.CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken: process.env.JWT_TOKEN,
-      // Specify the CLIENT_ID of the app that accesses the backend
-      audience: process.env.CLIENT_ID,
-      // Or, if multiple clients access the backend:
-    });
+async function googleOAuthToken(code) {
+  const url = "https://oauth2.googleapis.com/token";
 
-    const payload = ticket.getPayload();
+  const values = {
+    code,
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+    grant_type: "authorization_code",
+  };
 
-    return { payload };
-  } catch (error) {
-    verify().catch(error);
-  }
+  const params = new URLSearchParams(values);
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `${params}`,
+  });
+
+  const data = await res.json();
+
+  return data;
 }
 
-async function googleOAuthToken(code) {
-  try {
-    const url = "https://oauth2.googleapis.com/token";
+async function getGoogleUser({ id_token, access_token }) {
+  const url = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`;
 
-    const values = {
-      code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      grant_type: "authorization_code",
-    };
+  const res = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${id_token}`,
+    },
+  });
 
-    const params = new URLSearchParams(values);
+  const data = await res.json();
 
-    console.log(params);
+  return data;
+}
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: `${params}`,
-    });
+async function facebookOAuthToken(code) {
+  const url = "https://graph.facebook.com/v15.0/oauth/access_token";
 
-    const data = await res.json();
-    console.log(data);
+  const values = {
+    client_id: process.env.FACEBOOK_CLIENT_ID,
+    redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
+    client_secret: process.env.FACEBOOK_CLIENT_SECRET,
+    code,
+  };
 
-    return data;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const params = new URLSearchParams(values);
+
+  const res = await fetch(`${url}?${params}`);
+
+  const data = await res.json();
+
+  console.log(data);
+
+  return data;
+}
+
+async function facebookVerifyToken(access_token) {
+  const url = "https://graph.facebook.com/debug_token";
+
+  const values = {
+    input_token: access_token,
+    access_token,
+  };
+
+  const params = new URLSearchParams(values);
+
+  const res = await fetch(`${url}?${params}`);
+
+  const { data } = await res.json();
+
+  console.log(data);
+
+  return data;
+}
+
+async function getFacebookUser({ user_id, access_token }) {
+  const url = `https://graph.facebook.com/v15.0/${user_id}?access_token=${access_token}`;
+
+  const res = await fetch(url);
+
+  const data = await res.json();
+
+  console.log(data);
+
+  return data;
 }
 
 module.exports = {
   verify,
-  googleVerify,
   googleOAuthToken,
+  getGoogleUser,
+  facebookOAuthToken,
+  facebookVerifyToken,
+  getFacebookUser,
 };
