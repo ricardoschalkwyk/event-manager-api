@@ -46,9 +46,12 @@ async function join(id, userId) {
 }
 
 async function leave(id, userId) {
-  const event = await Event.findById(id);
+  const event = await Event.findById(id).populate("members");
+  const eventObj = event.toObject();
 
-  const filtered = event.members.filter((_id) => _id === userId);
+  const filtered = eventObj.members.filter((member) => {
+    return member._id !== userId;
+  });
 
   event.members = filtered;
 
