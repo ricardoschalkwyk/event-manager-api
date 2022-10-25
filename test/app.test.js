@@ -1,17 +1,17 @@
-const request = require("supertest");
+const supertest = require("supertest");
 
 const app = require("../src/app");
 
 describe("GET /", () => {
   it("responds with a json message", (done) => {
-    request(app)
-      .get("/")
+    supertest(app)
+      .get("/api")
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(
         200,
         {
-          message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",
+          message: "API - 👋🌎🌍🌏",
         },
         done
       );

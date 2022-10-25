@@ -21,8 +21,10 @@ async function verify(data) {
 }
 
 async function googleOAuthToken(code) {
+  // Preset the url
   const url = "https://oauth2.googleapis.com/token";
 
+  // Values required by google
   const values = {
     code,
     client_id: process.env.GOOGLE_CLIENT_ID,
@@ -33,6 +35,7 @@ async function googleOAuthToken(code) {
 
   const params = new URLSearchParams(values);
 
+  // Gives the params to the fetch so it can make the call to google
   const res = await fetch(url, {
     method: "POST",
     headers: {
@@ -47,8 +50,10 @@ async function googleOAuthToken(code) {
 }
 
 async function getGoogleUser({ id_token, access_token }) {
+  // Adds the token to the url
   const url = `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`;
 
+  // Then I do a fetch again with the access token and id_token
   const res = await fetch(url, {
     method: "GET",
     headers: {
@@ -64,6 +69,7 @@ async function getGoogleUser({ id_token, access_token }) {
 async function facebookOAuthToken(code) {
   const url = "https://graph.facebook.com/v15.0/oauth/access_token";
 
+  // Values required by facebook
   const values = {
     client_id: process.env.FACEBOOK_CLIENT_ID,
     redirect_uri: process.env.FACEBOOK_REDIRECT_URI,
@@ -73,6 +79,7 @@ async function facebookOAuthToken(code) {
 
   const params = new URLSearchParams(values);
 
+  // Gives the params to the fetch so it can make the call to facebook
   const res = await fetch(`${url}?${params}`);
 
   const data = await res.json();
@@ -83,6 +90,7 @@ async function facebookOAuthToken(code) {
 async function facebookVerifyToken(access_token) {
   const url = "https://graph.facebook.com/debug_token";
 
+  // Gives the values to facebook
   const values = {
     input_token: access_token,
     access_token,
@@ -90,6 +98,7 @@ async function facebookVerifyToken(access_token) {
 
   const params = new URLSearchParams(values);
 
+  // Send a fetch to facebook so they can verify the tokens
   const res = await fetch(`${url}?${params}`);
 
   const { data } = await res.json();
@@ -98,6 +107,7 @@ async function facebookVerifyToken(access_token) {
 }
 
 async function getFacebookUser({ user_id, access_token }) {
+  // Set url for fetching user data
   const url = `https://graph.facebook.com/v15.0/${user_id}?access_token=${access_token}`;
 
   const res = await fetch(url);

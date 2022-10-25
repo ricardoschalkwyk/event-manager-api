@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/api responds with a json message 1`] = `
+Object {
+  "message": "API - 👋🌎🌍🌏",
+}
+`;

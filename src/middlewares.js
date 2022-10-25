@@ -6,8 +6,8 @@ function notFound(req, res, next) {
   next(error);
 }
 
-// This function is being used to find the auth token that is given to a user when logging in.
 function auth(req, res, next) {
+  // This function is being used to find the auth token that is given to a user when logging in.
   const header = req.headers.authorization || "";
 
   // This checks if it as a token or not, if it does not it send the message
@@ -34,9 +34,7 @@ function auth(req, res, next) {
   }
 }
 
-/* eslint-disable no-unused-vars */
 function errorHandler(err, req, res) {
-  /* eslint-enable no-unused-vars */
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
 
   res.status(statusCode);

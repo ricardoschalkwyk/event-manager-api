@@ -4,9 +4,8 @@ const eventService = require("./event.service");
 
 const router = express.Router();
 
-// GET request
-// The auth function is called here for verifying the token on get requests
 router.get("/", auth, async (req, res, next) => {
+  // The auth function is called here for verifying the token on get requests
   try {
     // Inside this try I'm trying to find a certain users events
     const { sub } = req.user;
@@ -20,8 +19,8 @@ router.get("/", auth, async (req, res, next) => {
   }
 });
 
-// Get Every user created event
 router.get("/all", auth, async (req, res, next) => {
+  // Get Every user created event
   try {
     // Find every existing event
     const data = await eventService.findAllUserEvents();
@@ -34,10 +33,7 @@ router.get("/all", auth, async (req, res, next) => {
 
 router.get("/:id", auth, async (req, res, next) => {
   try {
-    // Inside this try I'm trying to find a certain users events
-    // const { sub } = req.user;
-
-    // By using the user-id I can findAll of the users events
+    // Find a certain event
     const data = await eventService.findOne(req.params.id);
 
     res.json(data);
@@ -46,10 +42,9 @@ router.get("/:id", auth, async (req, res, next) => {
   }
 });
 
-// User Id
 router.get("/findByUserId/:id", auth, async (req, res, next) => {
+  // find an event that belongs to a certain user
   try {
-    // By using the user-id I can findAll of the users events
     const data = await eventService.findByUserId(req.params.id);
 
     res.json(data);
@@ -66,21 +61,20 @@ router.get("/:id/join", auth, async (req, res) => {
   res.json(data);
 });
 
-router.get("/:id/leave", auth, async (req, res) => {
-  const { sub } = req.user;
-
-  const data = await eventService.leave(req.params.id, sub);
+router.get("/:id/leave/:userId", auth, async (req, res) => {
+  // This is used to leave a list
+  const data = await eventService.leave(req.params.id, req.params.userId);
 
   res.json(data);
 });
 
 router.put("/:id", async (req, res) => {
+  // This will update an event
   const data = await eventService.update(req.params.id, req.body);
 
   res.json(data);
 });
 
-// POST request
 router.post("/", auth, async (req, res) => {
   // Again sub is used for the user-id
   const { sub } = req.user;
@@ -101,7 +95,6 @@ router.post("/", auth, async (req, res) => {
   res.json(data);
 });
 
-// DELETE request
 router.delete("/:id", async (req, res) => {
   // Removes data determined by the event id
   const data = await eventService.remove(req.params.id);

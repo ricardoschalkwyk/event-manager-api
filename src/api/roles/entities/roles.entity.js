@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// THis is the structure of the roles given to users
 const rolesSchema = new mongoose.Schema({
   roleId: {
     type: String,

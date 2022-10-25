@@ -5,7 +5,6 @@ const authService = require("./auth.service");
 
 const router = express.Router();
 
-// POST request
 router.post("/sign-in", async (req, res) => {
   let message = "Success";
   let token;
@@ -44,7 +43,6 @@ router.post("/sign-in", async (req, res) => {
   }
 });
 
-// POST request
 router.post("/sign-up", async (req, res) => {
   // Here to data is taken from the sign-up page to create a new user
   const data = await userService.create(req.body);
@@ -61,8 +59,10 @@ router.post("/sign-up", async (req, res) => {
 // POST request
 router.get("/google-sign-in", async (req, res, next) => {
   try {
+    // Gets the code from the url query
     const { code } = req.query;
 
+    // Then gives it to the auth to be checked
     const { id_token } = await authService.googleOAuthToken(code);
 
     if (!id_token) {
@@ -72,6 +72,7 @@ router.get("/google-sign-in", async (req, res, next) => {
     // Gets user details from token
     const user = jwt.decode(id_token);
 
+    // Re-assign's the data to match my schema
     const newUser = await userService.googleCreate({
       firstName: user.given_name,
       lastName: user.family_name,
@@ -97,6 +98,7 @@ router.get("/facebook-sign-in", async (req, res, next) => {
   try {
     const { code } = req.query;
 
+    // The token and code is give to the their necessary functions to bbe checked
     const { access_token } = await authService.facebookOAuthToken(code);
     const { user_id } = await authService.facebookVerifyToken(access_token);
 
@@ -109,6 +111,7 @@ router.get("/facebook-sign-in", async (req, res, next) => {
       res.status(400).send();
     }
 
+    // Re-assign's the data to match my schema
     const newUser = await userService.facebookCreate({
       firstName: user.name.split(" ")[0],
       lastName: user.name.split(" ")[1],
