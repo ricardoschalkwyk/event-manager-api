@@ -23,7 +23,7 @@ async function findByUserId(userId) {
 
 async function findOne(id) {
   // Find a certain event
-  const eventData = Event.findById(id).populate("members");
+  const eventData = Event.findById(id).populate(["members", "user"]);
 
   return eventData;
 }

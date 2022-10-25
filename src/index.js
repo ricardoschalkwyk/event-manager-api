@@ -6,8 +6,7 @@ require("dotenv").config();
 const port = process.env.PORT || 8000;
 
 // set the uri value
-const uri =
-  "mongodb+srv://admin:password123.s1@cluster0.f2fwnlj.mongodb.net/event?retryWrites=true&w=majority";
+const uri = process.env.DB_URL;
 
 // connect to the uri
 async function main() {
