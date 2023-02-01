@@ -21,7 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.2",
     "morgan": "^1.10.0",
-    "node-fetch": "^3.3.0"
+    "node-fetch": "^2"
   },
   "devDependencies": {
     "eslint": "^8.22.0",
