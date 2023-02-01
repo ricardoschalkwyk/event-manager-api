@@ -1,3 +1,4 @@
+const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const User = require("../user/entities/user.entity");
 
